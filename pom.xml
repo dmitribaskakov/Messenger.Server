@@ -106,6 +106,21 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <index>true</index>
+                        <manifest>
+                            <mainClass>org.home.MessengerServer</mainClass>
+                            <addClasspath>true</addClasspath>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
             <!-- Allows the example to be run via 'mvn camel:run' -->
             <plugin>
                 <groupId>org.apache.camel</groupId>
@@ -113,7 +128,7 @@
                 <version>3.9.0</version>
                 <configuration>
                     <logClasspath>true</logClasspath>
-                    <mainClass>org.home.MainApp</mainClass>
+                    <mainClass>org.home.MessengerServer</mainClass>
                 </configuration>
             </plugin>
 
