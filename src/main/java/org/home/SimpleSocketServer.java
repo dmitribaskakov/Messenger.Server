@@ -16,10 +16,11 @@ public class SimpleSocketServer {
             serverSocket = new ServerSocket(PORT);
 
             System.out.println("Started, waiting for connection");
+            System.out.println("Started at " + serverSocket.getInetAddress()+ ":" + serverSocket.getLocalPort());
 
             Socket socket = serverSocket.accept();
 
-            System.out.println("Accepted. " + socket.getInetAddress());
+            System.out.println("Accepted from " + socket.getInetAddress()+ ":" + socket.getPort());
 
             try (InputStream in = socket.getInputStream();
                  OutputStream out = socket.getOutputStream()) {
