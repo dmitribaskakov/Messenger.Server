@@ -14,17 +14,14 @@ public class SimpleSocketServer {
         ServerSocket serverSocket = null;
         try {
             serverSocket = new ServerSocket(PORT);
-
-            System.out.println("Started, waiting for connection");
-            System.out.println("Started at " + serverSocket.getInetAddress()+ ":" + serverSocket.getLocalPort());
+            System.out.println("Server Address " + serverSocket.getLocalSocketAddress());
+            System.out.println("Started, waiting for connection...");
 
             Socket socket = serverSocket.accept();
-
-            System.out.println("Accepted from " + socket.getInetAddress()+ ":" + socket.getPort());
+            System.out.println("Client connected from " + socket.getRemoteSocketAddress());
 
             try (InputStream in = socket.getInputStream();
                  OutputStream out = socket.getOutputStream()) {
-
 
                 byte[] buf = new byte[32 * 1024];
                 int readBytes = in.read(buf);
