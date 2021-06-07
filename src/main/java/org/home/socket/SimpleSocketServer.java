@@ -1,4 +1,4 @@
-package org.home;
+package org.home.socket;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,7 +9,7 @@ import java.net.Socket;
 public class SimpleSocketServer {
     public static final int PORT = 19000;
 
-    public static void test() {
+    public static void start() {
 
         ServerSocket serverSocket = null;
         try {
