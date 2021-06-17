@@ -11,8 +11,8 @@ public class MessengerServer {
         System.out.println("MessengerServer: started" );
         //SimpleSocketServer.start();
 
-        MessengerServerNio Server = new MessengerServerNio();
-        Server.start(ADDRESS, PORT);
+        MessengerServerNio server = new MessengerServerNio();
+        server.start(ADDRESS, PORT);
 
         System.out.println("MessengerServer: finished");
     }
