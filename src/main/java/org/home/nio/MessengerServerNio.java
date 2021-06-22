@@ -35,9 +35,8 @@ public class MessengerServerNio {
         ServerSocketChannel serverChannel = ServerSocketChannel.open();
         serverChannel.configureBlocking(false);
         serverChannel.socket().bind(serverAddress);
-        //selector = SelectorProvider.provider().openSelector();
-        selector = Selector.open();
-        SelectionKey selectionKey = serverChannel.register(selector, OP_ACCEPT);
+        selector = SelectorProvider.provider().openSelector();
+        serverChannel.register(selector, OP_ACCEPT);
 
 
     }
