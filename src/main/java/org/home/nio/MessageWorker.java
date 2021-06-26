@@ -27,9 +27,9 @@ public class MessageWorker implements Runnable {
                         e.printStackTrace();
                     }
                 }
-                System.out.println("Recieved = " + new String(queue.get(0).data));
                 dataEvent = queue.remove(0);
             }
+            System.out.println("Recieved = " + new String(dataEvent.data));
             dataEvent.server.send(dataEvent.socket, dataEvent.data);
         }
     }

@@ -39,8 +39,8 @@ public class MessengerServerNio {
         messageWorker = new MessageWorker();
         new Thread(messageWorker).start();
 
-        // начинаем слушать сообщения
         while (true) {
+            // обрабатываем запросы на изменения селектора
             synchronized (changeRequests) {
                 for (ChangeRequest change : changeRequests) {
                     switch (change.type) {
@@ -54,7 +54,7 @@ public class MessengerServerNio {
                 changeRequests.clear();
             }
 
-            //ждем событий в канале
+            // ждем событий в канале
             selector.select();
             Iterator<SelectionKey> selectedKeys = selector.selectedKeys().iterator();
             while (selectedKeys.hasNext()) {
