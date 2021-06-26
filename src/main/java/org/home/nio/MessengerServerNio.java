@@ -74,6 +74,20 @@ public class MessengerServerNio {
         }
     }
 
+    private void accept(SelectionKey key) throws IOException {
+        ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
+        SocketChannel socketChannel = serverSocketChannel.accept();
+        socketChannel.configureBlocking(false);
+        socketChannel.register(selector, OP_READ);
+    }
+
+    private void read(SelectionKey key) throws IOException {
+        SocketChannel socketChannel = (SocketChannel) key.channel();
+        readBuffer.clear();
+        int numRead = socketChannel.read(readBuffer);
+        messageWorker.processData(this, socketChannel, readBuffer.array(), numRead);
+    }
+
     void send(SocketChannel socket, byte[] data) {
         synchronized (changeRequests) {
             changeRequests.add(new ChangeRequest(socket, CHANGEOPS, OP_WRITE));
@@ -89,20 +103,6 @@ public class MessengerServerNio {
         selector.wakeup();
     }
 
-    private void accept(SelectionKey key) throws IOException {
-        ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
-        SocketChannel socketChannel = serverSocketChannel.accept();
-        socketChannel.configureBlocking(false);
-        socketChannel.register(selector, OP_READ);
-    }
-
-    private void read(SelectionKey key) throws IOException {
-        SocketChannel socketChannel = (SocketChannel) key.channel();
-        readBuffer.clear();
-        int numRead = socketChannel.read(readBuffer);
-        messageWorker.processData(this, socketChannel, readBuffer.array(), numRead);
-    }
-
     private void write(SelectionKey key) throws IOException {
         SocketChannel socketChannel = (SocketChannel) key.channel();
         synchronized (pendingData) {
@@ -113,7 +113,7 @@ public class MessengerServerNio {
                 if (writeBuffer.remaining() > 0) {
                     break;
                 }
-                System.out.println("Send echo = " + new String(queue.get(0).array()));
+                System.out.println("Send echo = " + new String(writeBuffer.array()));
                 queue.remove(0);
             }
             if (queue.isEmpty()) {
