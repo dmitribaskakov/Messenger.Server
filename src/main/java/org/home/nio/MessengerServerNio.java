@@ -56,6 +56,15 @@ public class MessengerServerNio {
 
             // ждем событий в канале
             selector.select();
+
+//            if(serverChannel != null && serverChannel.isOpen()) {
+//                try {
+//                    serverChannel.close();
+//                } catch (IOException e) {
+//                    log.error("Exception while closing server socket");
+//                }
+//            }
+
             Iterator<SelectionKey> selectedKeys = selector.selectedKeys().iterator();
             while (selectedKeys.hasNext()) {
                 SelectionKey key = selectedKeys.next();
