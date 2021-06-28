@@ -92,9 +92,18 @@ public class MessengerServerNio {
 
     private void read(SelectionKey key) throws IOException {
         SocketChannel socketChannel = (SocketChannel) key.channel();
-        readBuffer.clear();
-        int numRead = socketChannel.read(readBuffer);
-        messageWorker.processData(this, socketChannel, readBuffer.array(), numRead);
+
+        if (socketChannel != null && socketChannel.isOpen()) {
+            readBuffer.clear();
+            int numRead = socketChannel.read(readBuffer);
+            messageWorker.processData(this, socketChannel, readBuffer.array(), numRead);
+        } else {
+            try {
+                socketChannel.close();
+            } catch (IOException e) {
+                log.error("Exception while closing server socket");
+            }
+        }
     }
 
     void send(SocketChannel socket, byte[] data) {
