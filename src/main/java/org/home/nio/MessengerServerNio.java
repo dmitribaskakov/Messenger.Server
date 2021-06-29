@@ -11,6 +11,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
+import java.nio.channels.NotYetConnectedException;
 import java.util.*;
 
 import static java.nio.ByteBuffer.allocate;
@@ -57,14 +58,6 @@ public class MessengerServerNio {
             // ждем событий в канале
             selector.select();
 
-//            if(serverChannel != null && serverChannel.isOpen()) {
-//                try {
-//                    serverChannel.close();
-//                } catch (IOException e) {
-//                    log.error("Exception while closing server socket");
-//                }
-//            }
-
             Iterator<SelectionKey> selectedKeys = selector.selectedKeys().iterator();
             while (selectedKeys.hasNext()) {
                 SelectionKey key = selectedKeys.next();
@@ -92,20 +85,30 @@ public class MessengerServerNio {
 
     private void read(SelectionKey key) throws IOException {
         SocketChannel socketChannel = (SocketChannel) key.channel();
-
-        if (socketChannel != null && socketChannel.isOpen()) {
-            readBuffer.clear();
+        readBuffer.clear();
+        try {
             int numRead = socketChannel.read(readBuffer);
             messageWorker.processData(this, socketChannel, readBuffer.array(), numRead);
-        } else {
-            try {
-                socketChannel.close();
-            } catch (IOException e) {
-                log.error("Exception while closing server socket");
-            }
+        } catch (IOException e) { //NotYetConnectedException
+            log.error("Exception while closing server socket");
+            tryReConnect(key);
         }
     }
 
+    private void tryReConnect(SelectionKey key) {
+        SocketChannel socketChannel = (SocketChannel) key.channel();
+        try {
+            socketChannel.close();
+            //key.interestOps(OP_READ);
+            //empty my old lost connection and let it get by garbage col. immediately
+            //System.gc();
+            //Wait a new client Socket connection and address this to my local variable
+            //socketChannel = ServerSocketChannel.accept(); // Waiting for another Connection
+            //System.out.println("Connection established...");
+        } catch (Exception e) {
+            log.error("ReConnect not successful "+e.getMessage());
+        }
+    }
     void send(SocketChannel socket, byte[] data) {
         synchronized (changeRequests) {
             changeRequests.add(new ChangeRequest(socket, CHANGEOPS, OP_WRITE));
