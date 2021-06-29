@@ -26,7 +26,7 @@ public class MessengerServerNio {
     private final List<ChangeRequest> changeRequests = new LinkedList<>();
     private final Map<SocketChannel, List<ByteBuffer>> pendingData = new HashMap<>();
 
-    static Logger log = LoggerFactory.getLogger(MessengerServerNio.class);
+    //static Logger log = LoggerFactory.getLogger(MessengerServerNio.class);
 
     public void start(String ServerAddress, int ServerPort) throws IOException {
         readBuffer = allocate(8192);
@@ -81,6 +81,7 @@ public class MessengerServerNio {
         SocketChannel socketChannel = serverSocketChannel.accept();
         socketChannel.configureBlocking(false);
         socketChannel.register(selector, OP_READ);
+        System.out.println("Accept connection from client " + socketChannel.getRemoteAddress());
     }
 
     private void read(SelectionKey key) throws IOException {
@@ -90,12 +91,12 @@ public class MessengerServerNio {
             int numRead = socketChannel.read(readBuffer);
             messageWorker.processData(this, socketChannel, readBuffer.array(), numRead);
         } catch (IOException e) { //NotYetConnectedException
-            log.error("Exception while closing server socket");
-            tryReConnect(key);
+            System.out.println("Close connection to client " + socketChannel.getRemoteAddress());
+            closeSocketChannel(key);
         }
     }
 
-    private void tryReConnect(SelectionKey key) {
+    private void closeSocketChannel(SelectionKey key) {
         SocketChannel socketChannel = (SocketChannel) key.channel();
         try {
             socketChannel.close();
@@ -106,7 +107,8 @@ public class MessengerServerNio {
             //socketChannel = ServerSocketChannel.accept(); // Waiting for another Connection
             //System.out.println("Connection established...");
         } catch (Exception e) {
-            log.error("ReConnect not successful "+e.getMessage());
+            System.out.println("Close Socket Channel not successful "+e.getMessage());
+            //log.error("Close Socket Channel not successful "+e.getMessage());
         }
     }
     void send(SocketChannel socket, byte[] data) {
