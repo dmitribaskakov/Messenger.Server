@@ -2,6 +2,7 @@ package org.home.nio;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.home.env.Settings;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -28,11 +29,11 @@ public class MessengerServerNio {
 
     //static Logger log = LoggerFactory.getLogger(MessengerServerNio.class);
 
-    public void start(String ServerAddress, int ServerPort) throws IOException {
+    public void start(Settings settings) throws IOException {
         readBuffer = allocate(8192);
         ServerSocketChannel serverChannel = ServerSocketChannel.open();
         serverChannel.configureBlocking(false);
-        serverChannel.socket().bind(new InetSocketAddress(ServerAddress, ServerPort));
+        serverChannel.socket().bind(new InetSocketAddress(settings.getServerAddress(), settings.getServerPort()));
         selector = SelectorProvider.provider().openSelector();
         serverChannel.register(selector, OP_ACCEPT);
 
