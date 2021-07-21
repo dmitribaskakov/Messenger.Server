@@ -101,15 +101,8 @@ public class MessengerServerNio {
         SocketChannel socketChannel = (SocketChannel) key.channel();
         try {
             socketChannel.close();
-            //key.interestOps(OP_READ);
-            //empty my old lost connection and let it get by garbage col. immediately
-            //System.gc();
-            //Wait a new client Socket connection and address this to my local variable
-            //socketChannel = ServerSocketChannel.accept(); // Waiting for another Connection
-            //System.out.println("Connection established...");
         } catch (Exception e) {
             System.out.println("Close Socket Channel not successful "+e.getMessage());
-            //log.error("Close Socket Channel not successful "+e.getMessage());
         }
     }
     void send(SocketChannel socket, byte[] data) {
