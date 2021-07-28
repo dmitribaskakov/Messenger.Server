@@ -21,61 +21,54 @@ public class MessageWorker implements Runnable {
 
     public void run() {
         ServerDataEvent dataEvent;
-        try{9
-
-        } catch (InterruptedException e) {
-        }
-
-        while (true)
-            {
-                synchronized (queue) {
-                    while (queue.isEmpty()) {
-                        try {
-                            queue.wait();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+        while (true) {
+            synchronized (queue) {
+                while (queue.isEmpty()) {
+                    try {
+                        queue.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                    dataEvent = queue.remove(0);
                 }
-                //ковертируем сообщение
-                Message message = Message.getFromString(new String(dataEvent.data));
-                if (message.operation.equals(Message.Operation_Authentication)) {
-                    //аутентификация
-                    System.out.println("[Authentication " + message.from +"]");
-                    authenticatedClient.put(message.from, dataEvent.socket);
-                    dataEvent.server.send(dataEvent.socket, dataEvent.data);
+                dataEvent = queue.remove(0);
+            }
+            //ковертируем сообщение
+            Message message = Message.getFromString(new String(dataEvent.data));
+            if (message.operation.equals(Message.Operation_Authentication)) {
+                //аутентификация
+                System.out.println("[Authentication " + message.from +"]");
+                authenticatedClient.put(message.from, dataEvent.socket);
+                dataEvent.server.send(dataEvent.socket, dataEvent.data);
 
 
-                } else if (message.operation.equals(Message.Operation_Message)) {
-                    //прием сообщения
-                    System.out.print("[From:" + message.from +" To:");
-                    if (message.to.isEmpty()) {
-                        System.out.print("All");
-                        //отправляем сообщение всем
-                        for(Map.Entry<String, SocketChannel> item : authenticatedClient.entrySet()) {
-                            if ((! message.from.equals(item.getKey())) || (item.getValue() != null)) {
-                                sendEvent(message, item.getKey(), item.getValue(), dataEvent.server);
-                            }
+            } else if (message.operation.equals(Message.Operation_Message)) {
+                //прием сообщения
+                System.out.print("[From:" + message.from +" To:");
+                if (message.to.isEmpty()) {
+                    System.out.print("All");
+                    //отправляем сообщение всем
+                    for(Map.Entry<String, SocketChannel> item : authenticatedClient.entrySet()) {
+                        if ((! message.from.equals(item.getKey())) || (item.getValue() != null)) {
+                            sendEvent(message, item.getKey(), item.getValue(), dataEvent.server);
                         }
-
-                    } else {
-                        System.out.print(message.to);
-                        //отправляем сообщение указанному адресату
-                        SocketChannel authSocket = authenticatedClient.get(message.to);
-                        if (authSocket!=null) {
-                            sendEvent(message, message.to, authSocket, dataEvent.server);
-                        }
-
                     }
-                    System.out.println(" Msg:" + message.body +"]");
-                    //dataEvent.server.send(dataEvent.socket, dataEvent.data);
 
                 } else {
-                    System.out.println("[Received = '" + new String(dataEvent.data) +"']");
-                    dataEvent.server.send(dataEvent.socket, dataEvent.data);
+                    System.out.print(message.to);
+                    //отправляем сообщение указанному адресату
+                    SocketChannel authSocket = authenticatedClient.get(message.to);
+                    if (authSocket!=null) {
+                        sendEvent(message, message.to, authSocket, dataEvent.server);
+                    }
 
                 }
+                System.out.println(" Msg:" + message.body +"]");
+                //dataEvent.server.send(dataEvent.socket, dataEvent.data);
+
+            } else {
+                System.out.println("[Received = '" + new String(dataEvent.data) +"']");
+                dataEvent.server.send(dataEvent.socket, dataEvent.data);
+
             }
         }
     }
