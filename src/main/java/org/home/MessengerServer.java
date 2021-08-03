@@ -2,6 +2,7 @@ package org.home;
 
 import org.home.env.Settings;
 import org.home.env.SettingsManager;
+import org.home.jdbc.JdbcExample;
 import org.home.nio.MessengerServerNio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,25 +22,9 @@ public class MessengerServer {
         //SimpleSocketServer.start();
 
 
-//        Map<String, String> states = new HashMap<>();
-//        states.put("1", "Germany");
-//        states.put("2", "Spain");
-//        states.put("4", "France");
-//        states.put("3", "Italy");
-//
-//        for(Map.Entry<String, String> item : states.entrySet()) {
-//            foo(item.getKey(), item.getValue());
-//        }
-//        System.out.println("MessengerServer: test done");
-//
-//        states.forEach((auth, socket) -> {
-//                    //foo(k, v);
-//                    String sk = "'"+auth+"'";
-//                    System.out.printf("Key: %s  ", sk);
-//                    System.out.printf("Value: %s \n", socket);
-//                });
-//
-//        System.out.println("MessengerServer: test done");
+        //JdbcExample j = new JdbcExample();
+        JdbcExample.test();
+
 
         MessengerServerNio server = new MessengerServerNio();
         server.start(settings);
