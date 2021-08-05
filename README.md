@@ -45,18 +45,19 @@ https://www.youtube.com/watch?v=A8dErdDMqb0
 
 1. Create a Postgres docker container
 ```
-    docker run --name db.messenger.server -d --rm -p 5432:5432 -v c:/Projects/Messenger.Java/Messenger.Server/db/data:/var/lib/postgresql/data -e TZ=Asia/Novosibirsk -e POSTGRES_PASSWORD=password postgres
+    docker run --name db.messenger -d --rm -p 5432:5432 -v c:/Projects/Messenger.Java/Messenger.Server/data/db:/var/lib/postgresql/data -e TZ=Asia/Novosibirsk -e POSTGRES_PASSWORD=password postgres
     docker ps -a
-    docker stop db.messenger.server
+    docker stop db.messenger
 ```
 2. Connect and run some queries
 ```
-    docker exec -it db.messenger.server psql -U postgres
+    docker exec -it db.messenger psql -U postgres
     CREATE DATABASE messenger;
     \c messenger;
     CREATE TABLE users (
     Id SERIAL PRIMARY KEY,
-    Name CHARACTER VARYING(30) UNIQUE NOT NULL);
+    Name CHARACTER VARYING(30) UNIQUE NOT NULL CHECK (Name !='') )
+
     INSERT INTO users (Name) VALUES ('One');
     \dt;
     select * from users;
