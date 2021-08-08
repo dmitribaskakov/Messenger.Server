@@ -3,6 +3,7 @@ package org.home;
 import org.home.env.Settings;
 import org.home.env.SettingsManager;
 import org.home.jdbc.JdbcExample;
+import org.home.jdbc.Storage;
 import org.home.nio.MessengerServerNio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,9 @@ public class MessengerServer {
     public static void main(String... args) throws Exception {
         SettingsManager settingsManager = new SettingsManager();
         Settings settings = settingsManager.load();
+
+        Storage storage = new Storage();
+        storage.start(settings);
 
         System.out.println("MessengerServer: started" );
         //SimpleSocketServer.start();

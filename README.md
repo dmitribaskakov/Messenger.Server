@@ -56,10 +56,19 @@ https://www.youtube.com/watch?v=A8dErdDMqb0
     \c messenger;
     CREATE TABLE users (
     Id SERIAL PRIMARY KEY,
-    Name CHARACTER VARYING(30) UNIQUE NOT NULL CHECK (Name !='') )
+    Name CHARACTER VARYING(30) UNIQUE NOT NULL CHECK (Name !='') );
 
-    INSERT INTO users (Name) VALUES ('One');
+    INSERT INTO users (Name) VALUES ('@All');
     \dt;
     select * from users;
+    
+    
+    CREATE TABLE Message (
+    Id SERIAL PRIMARY KEY,
+    FromUserId INTEGER REFERENCES users (Id),
+    ToUserId INTEGER REFERENCES users (Id),
+    DT timestamp with time zone, 
+    Message CHARACTER VARYING(255) NOT NULL );
+    
     \q
 ```
